@@ -1,0 +1,53 @@
+volumes:
+  dbdata:
+    driver: local
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: soccer_team
+    container_name: soccer_team
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    # networks:
+    #   - laravel
+    depends_on:
+      - db
+      - webserver
+  webserver:
+    image: nginx:alpine
+    container_name: soccer_team_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    # networks:
+    #   - laravel
+
+  db:
+    image: mysql:5.7
+    container_name: soccer_team_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: soccer
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    # networks:
+    #   - laravel
+
+# networks:
+#   laravel:
+#     driver: bridge

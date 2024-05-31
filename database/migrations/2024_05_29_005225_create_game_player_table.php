@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('game_players', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->tinyInteger('rsvp')->default(0);
             $table->smallInteger('team')->nullable();
             $table->foreignUuid('game_id')->references('id')->on('games');
             $table->foreignUuid('player_id')->references('id')->on('players');
+            $table->unique(['game_id', 'player_id']);
             $table->timestamps();
         });
     }

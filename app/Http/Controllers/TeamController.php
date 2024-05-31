@@ -29,16 +29,20 @@ class TeamController extends Controller
             'player_id' => 'required|uuid|exists:players,id',
         ]);
 
+        $gamePlayerExists = GamePlayer::where('game_id', $validatedData['game_id'])
+            ->where('player_id', $validatedData['player_id'])
+            ->exists()
+        ;
+
+        if ($gamePlayerExists) {
+            throw new Exception('This player is already confirmed for this game');
+        }
+
         $gamePlayer = new GamePlayer([
             'game_id' => $validatedData['game_id'],
             'player_id' => $validatedData['player_id'],
         ]);
-
-        //TODO: add this validation
-        // if ($gamePlayer->exists()) {
-        //     throw new Exception('This player is already confirmed for this game');
-        // }
-
+        
         $gamePlayer->save();
 
         return $gamePlayer;
@@ -53,7 +57,7 @@ class TeamController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Generate teams for a game according to the amount of players per team.
      */
     public function update(Request $request)
     {
@@ -65,6 +69,9 @@ class TeamController extends Controller
         return $this->generateTeams($validatedData['game_id']);
     }
 
+    /**
+     * Generate teams by separating goalkeepers and balancing the players.
+     */
     private function generateTeams($gameId)
     {
         $players = (new Game(['id' => $gameId]))->players->sortBy('ability');
@@ -73,6 +80,10 @@ class TeamController extends Controller
         //validate that the players number is not inferior to double the team limit
         ////if there's MORE, forbid it
         $playersCount = $players->count();
+
+        if ($playersCount%2 != 0) {
+            throw new Exception("The amount of players confirmed for the game must be even.");
+        }
 
         $teams = [];
 

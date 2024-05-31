@@ -66,28 +66,57 @@ class TeamController extends Controller
             'players' => 'required|integer|min:1'
         ]);
 
-        return $this->generateTeams($validatedData['game_id']);
+        $gameId = $validatedData['game_id'];
+
+        $players = (new Game(['id' => $gameId]))->players->sortBy('ability');
+
+        $this->validatePlayersCount($players, $validatedData['players']);
+
+        $teams = $this->generateTeams($players);
+
+        return $this->persistTeams($gameId, $teams);
     }
 
     /**
      * Generate teams by separating goalkeepers and balancing the players.
      */
-    private function generateTeams($gameId)
+    private function validatePlayersCount(Collection &$players, int $teamCount): void
     {
-        $players = (new Game(['id' => $gameId]))->players->sortBy('ability');
-
-        //TODO: add this validation
-        //validate that the players number is not inferior to double the team limit
-        ////if there's MORE, forbid it
         $playersCount = $players->count();
+        $desiredPlayersCount = $teamCount;
+
+        if ($playersCount <= 0) {
+            throw new Exception("The amount of players confirmed for the game must be greater than zero.");
+        }
 
         if ($playersCount%2 != 0) {
             throw new Exception("The amount of players confirmed for the game must be even.");
         }
 
+        if ($playersCount/2 < $desiredPlayersCount) {
+            throw new Exception(
+                "The amount of players confirmed for the game cannot be less than "
+                . $desiredPlayersCount
+            );
+        }
+
+        if ($playersCount/2 > $desiredPlayersCount) {
+            throw new Exception(
+                "The amount of players confirmed for the game cannot be more than "
+                . $desiredPlayersCount
+            );
+        }
+    }
+
+    /**
+     * Generate teams by separating goalkeepers and balancing the players abilities.
+     */
+    private function generateTeams(Collection &$players): array
+    {
         $teams = [];
 
         $goalkeepers = $players->where('goalkeeper', '=', 1);
+        $playersCount = $players->count();
 
         if ($goalkeepers->count() >= 2) {
             $id = $this->extractGoalkeeper($goalkeepers, $players);
@@ -106,23 +135,12 @@ class TeamController extends Controller
             $teams[2][] = $id;
         }
 
-        GamePlayer::whereIn('player_id', $teams[1])
-            ->where('game_id', $gameId)
-            ->update([
-                'team' => 1
-            ])
-        ;
-
-        GamePlayer::whereIn('player_id', $teams[2])
-            ->where('game_id', $gameId)
-            ->update([
-                'team' => 2
-            ])
-        ;
-
-        return GamePlayer::where('game_id', $gameId)->get();
+        return $teams;
     }
 
+    /**
+     * Extract goalkeeper from original collections after being added into a team.
+     */
     private function extractGoalkeeper(Collection &$goalkeepers, Collection &$players): string
     {
         $id = $goalkeepers->pop()->id;
@@ -134,6 +152,30 @@ class TeamController extends Controller
         );
 
         return $id;
+    }
+
+    /**
+     * Persist teams in the database and returning game_players records.
+     */
+    private function persistTeams(string $gameId, array $teams): GamePlayer|Collection
+    {
+        $this->saveTeam($teams[1], 1, $gameId);
+        $this->saveTeam($teams[2], 2, $gameId);
+
+        return GamePlayer::where('game_id', $gameId)->get();
+    }
+
+    /**
+     * Persist teams in the database by updating game_players rows.
+     */
+    private function saveTeam(array $team, int $index, string $gameId): void
+    {
+        GamePlayer::whereIn('player_id', $team)
+            ->where('game_id', $gameId)
+            ->update([
+                'team' => $index
+            ])
+        ;
     }
 
     /**

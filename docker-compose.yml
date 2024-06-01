@@ -1,3 +1,5 @@
+version: '3.7'
+
 volumes:
   dbdata:
     driver: local
@@ -27,8 +29,6 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
-    # networks:
-    #   - laravel
 
   db:
     image: mysql:5.7

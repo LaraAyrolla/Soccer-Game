@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Models\Player;
 use Illuminate\Http\Request;
 
 class GameController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $games = Game::all()->sortByDesc('date');
@@ -27,6 +25,22 @@ class GameController extends Controller
         return view('game.register');
     }
 
+    public function show(string $gameId)
+    {
+        $game = Game::findOrFail($gameId);
+        $players = Player::all()->sortByDesc('ability');
+        $gamePlayers = (new Game(['id' => $gameId]))->players;
+
+        return view(
+            'game.players', 
+            [
+                'game' => $game,
+                'players' => $players,
+                'gamePlayers' => $gamePlayers,
+            ]
+        );
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -40,14 +54,6 @@ class GameController extends Controller
         ]);
 
         return redirect('games')->with('success', 'Partida criada com sucesso.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Game $game)
-    {
-        // $playersCount = (new Game(['id' => $gameId]))->players->count();
     }
 
     /**

@@ -51,9 +51,20 @@ class TeamController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(GamePlayer $gamePlayer)
+    public function show(string $gameId)
     {
-        //
+        $game = Game::findOrFail($gameId);
+        $players = Player::all()->sortByDesc('ability');
+        $gamePlayers = (new Game(['id' => $gameId]))->players;
+
+        return view(
+            'game.players', 
+            [
+                'game' => $game,
+                'players' => $players,
+                'gamePlayers' => $gamePlayers,
+            ]
+        );
     }
 
     /**

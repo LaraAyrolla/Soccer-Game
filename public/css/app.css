@@ -14,3 +14,7 @@ h1 {
 table {
     padding: 0, 50px;
 }
+
+.lead b {
+    font-weight: bold !important;
+}

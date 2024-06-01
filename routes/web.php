@@ -18,13 +18,3 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::post(
-    '/player',
-    [PlayerController::class, 'store']
-);
-
-Route::post(
-    '/game',
-    [GameController::class, 'store']
-);

@@ -85,7 +85,7 @@
                     @endforeach
                 </tbody>
             </table>
-        @each
+        @else
             <p>Nenhuma partida cadastrada! Clique no botão acima para adicionar partidas.</p>
         @endif
     </body>

@@ -12,7 +12,7 @@ class GameController extends Controller
      */
     public function index()
     {
-        $games = Game::all()->sortBy('date');
+        $games = Game::all()->sortByDesc('date');
 
         for ($i=0; $i<$games->count(); $i++) {
             $games[$i]->date = date_format(new \DateTime($games[$i]->date), 'd/m/Y');
@@ -34,7 +34,7 @@ class GameController extends Controller
             'date' => 'required|date',
         ]);
 
-        $game = Game::create([
+        Game::create([
             'label' => ucfirst($validatedData['label']),
             'date' => $validatedData['date'],
         ]);

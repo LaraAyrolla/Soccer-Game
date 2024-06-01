@@ -96,14 +96,14 @@ class TeamController extends Controller
         if ($playersCount/2 < $desiredPlayersCount) {
             throw new Exception(
                 "The amount of players confirmed for the game cannot be less than "
-                . $desiredPlayersCount
+                . $desiredPlayersCount,
             );
         }
 
         if ($playersCount/2 > $desiredPlayersCount) {
             throw new Exception(
                 "The amount of players confirmed for the game cannot be more than "
-                . $desiredPlayersCount
+                . $desiredPlayersCount,
             );
         }
     }

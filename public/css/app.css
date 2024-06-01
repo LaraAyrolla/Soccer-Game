@@ -1,0 +1,16 @@
+.page-container {
+    text-align: center;
+    padding: 1% 5%;
+}
+
+h1, table{
+    text-align: center;
+}
+
+h1 {
+    padding: 20px 0px;
+}
+
+table {
+    padding: 0, 50px;
+}

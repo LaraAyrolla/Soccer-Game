@@ -12,12 +12,21 @@ class GameController extends Controller
      */
     public function index()
     {
-        //
+        $games = Game::all()->sortBy('date');
+
+        for ($i=0; $i<$games->count(); $i++) {
+            $games[$i]->date = date_format(new \DateTime($games[$i]->date), 'd/m/Y');
+            $games[$i]->players_amount = $games[$i]->players->count();
+        }
+
+        return view('game.index', ['games' => $games]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function create(Request $request)
+    {
+        return view('game.register');
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -26,11 +35,11 @@ class GameController extends Controller
         ]);
 
         $game = Game::create([
-            'label' => $validatedData['label'],
+            'label' => ucfirst($validatedData['label']),
             'date' => $validatedData['date'],
         ]);
 
-        return $game;
+        return redirect('games')->with('success', 'Partida criada com sucesso.');
     }
 
     /**
@@ -38,7 +47,7 @@ class GameController extends Controller
      */
     public function show(Game $game)
     {
-        //
+        // $playersCount = (new Game(['id' => $gameId]))->players->count();
     }
 
     /**

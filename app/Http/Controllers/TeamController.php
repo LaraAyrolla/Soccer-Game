@@ -132,21 +132,19 @@ class TeamController extends Controller
             $playersCount-=2;
         }
 
-        $players = $players->toArray();
-
         if ($playersCount == 2) {
-            $teams[1][] = $players[0]['id'];
-            $teams[2][] = $players[1]['id'];
+            $teams[1][] = $players->pop()->id;
+            $teams[2][] = $players[1]['id']->pop()->id;
 
             return $teams;
         }
 
-        for ($i=0; $i<$playersCount/2; $i++) {
-            $teams[1][] = $players[$i]['id'];
-            $teams[1][] = $players[$playersCount-$i-1]['id'];
+        for ($i=0; $i<$playersCount/4; $i++) {
+            $teams[1][] = $players->pop()->id;
+            $teams[1][] = $players->shift()->id;
 
-            $teams[2][] = $players[$i]['id'];
-            $teams[1][] = $players[$playersCount-$i-2]['id'];
+            $teams[2][] = $players->pop()->id;
+            $teams[2][] = $players->shift()->id;
         }
 
         return $teams;

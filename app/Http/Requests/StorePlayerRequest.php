@@ -14,6 +14,13 @@ class StorePlayerRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation()
+    {
+        $this->merge([
+            'name' => ucwords(strtolower($this->name)),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

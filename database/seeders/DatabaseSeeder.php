@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Game;
+use App\Models\GamePlayer;
+use App\Models\Player;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,11 +15,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        Game::factory()->create(['label' => 'Jogo Legal']);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $game = Game::factory()->create(['label' => 'Joguinho']);
+        $players = Player::factory(10)->create();
+
+        for ($i=0; $i<10; $i++) {
+            GamePlayer::factory()->create([
+                    'team' => null,
+                    'game_id' => $game->id,
+                    'player_id' => $players->pop()->id,
+            ]);
+        }
     }
 }

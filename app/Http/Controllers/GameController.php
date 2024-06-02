@@ -33,7 +33,7 @@ class GameController extends Controller
     {
         $game = Game::findOrFail($gameId);
         $players = Player::all()->sortByDesc('ability');
-        $gamePlayers = (new Game(['id' => $gameId]))->players;
+        $gamePlayers = (new Game(['id' => $gameId]))->players; //TODO: try to use find
 
         return view(
             'game.players', 
@@ -61,9 +61,9 @@ class GameController extends Controller
     public function indexAvailablePlayers(string $gameId)
     {
         $game = Game::findOrFail($gameId);
-        $availablePlayers =  (new Game(['id' => $gameId]))
+        $availablePlayers =  (new Game(['id' => $gameId])) //TODO: try to use find
             ->availablePlayers()
-            ->sortBy('name')
+            ->sortBy('name') //TODO: try to put this in the model
         ;
 
         return view(

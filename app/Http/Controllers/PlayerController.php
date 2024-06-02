@@ -20,7 +20,7 @@ class PlayerController extends Controller
     public function store(StorePlayerRequest $request)
     {
         Player::create([
-            'name' => ucwords($request->post('name')), //TODO: add passes validation
+            'name' => $request->post('name'),
             'ability' => $request->post('ability'),
             'goalkeeper' => $request->post('goalkeeper'),
         ]);

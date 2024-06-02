@@ -53,7 +53,7 @@ class TeamController extends Controller
         ;
 
         if ($gamePlayerExists) {
-            return back()->withErrors('This player is already confirmed for this game');
+            return back()->withErrors('Esse jogador já confirmou presença para essa partida.');
         }
 
         (new GamePlayer([
@@ -84,7 +84,6 @@ class TeamController extends Controller
         $this->persistTeams($gameId, $teams);
     
         return back()->with('success', 'Equipes geradas com sucesso!');
-
     }
 
     /**

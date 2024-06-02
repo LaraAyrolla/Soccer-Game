@@ -34,4 +34,12 @@ class Player extends Model
             }
         });
     }
+
+    /**
+     * Get the game_player to which the player belongs.
+     */
+    public function gamePlayer()
+    {
+        return $this->belongsTo(GamePlayer::class, 'player_id', 'id');
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePlayerRequest;
 use App\Models\Player;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
@@ -16,18 +17,12 @@ class PlayerController extends Controller
         return view('player.register');
     }
 
-    public function store(Request $request)
+    public function store(StorePlayerRequest $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:100|unique:players',
-            'ability' => 'required|integer|min:1|max:5',
-            'goalkeeper' => 'required|boolean',
-        ]);
-
         Player::create([
-            'name' => ucwords($validatedData['name']), //TODO: add passes validation
-            'ability' => $validatedData['ability'],
-            'goalkeeper' => $validatedData['goalkeeper'],
+            'name' => ucwords($request->post('name')), //TODO: add passes validation
+            'ability' => $request->post('ability'),
+            'goalkeeper' => $request->post('goalkeeper'),
         ]);
 
         return back()->with('success', 'Jogador cadastrado com sucesso.');

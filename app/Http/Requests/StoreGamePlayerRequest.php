@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePlayerRequest extends FormRequest
+class StoreGamePlayerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,8 @@ class StorePlayerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:100|unique:players',
-            'ability' => 'required|integer|min:1|max:5',
-            'goalkeeper' => 'required|boolean',
+            'game_id' => 'required|uuid|exists:games,id',
+            'player_id' => 'required|uuid|exists:players,id',
         ];
     }
 }

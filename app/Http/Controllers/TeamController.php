@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreGamePlayerRequest;
+use App\Http\Requests\UpdateTeamsRequest;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Player;
@@ -40,15 +42,10 @@ class TeamController extends Controller
     /**
      * Store a newly created game_player with the game and the RSVP'd player.
      */
-    public function store(Request $request): Redirector|RedirectResponse
+    public function store(StoreGamePlayerRequest $request): Redirector|RedirectResponse
     {
-        $validatedData = $request->validate([
-            'game_id' => 'required|uuid|exists:games,id',
-            'player_id' => 'required|uuid|exists:players,id',
-        ]);
-
-        $gameId = $validatedData['game_id'];
-        $playerId = $validatedData['player_id'];
+        $gameId = $request->post('game_id');
+        $playerId = $request->post('player_id');
 
         $gamePlayerExists = GamePlayer::where('game_id', $gameId)
             ->where('player_id', $playerId)
@@ -70,13 +67,9 @@ class TeamController extends Controller
     /**
      * Generate teams for a game according to the amount of players RSVP'd.
      */
-    public function update(Request $request): Redirector|RedirectResponse
+    public function update(UpdateTeamsRequest $request): Redirector|RedirectResponse
     {
-        $validatedData = $request->validate([
-            'game_id' => 'required|uuid|exists:games,id',
-        ]);
-
-        $gameId = $validatedData['game_id'];
+        $gameId = $request->post('game_id');
 
         $players = (new Game(['id' => $gameId]))->players->sortBy('ability');
 

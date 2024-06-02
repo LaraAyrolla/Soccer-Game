@@ -16,6 +16,11 @@ class PlayerController extends Controller
         //
     }
 
+    public function create(Request $request)
+    {
+        return view('player.register');
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -28,7 +33,7 @@ class PlayerController extends Controller
         ]);
 
         $player = Player::create([
-            'name' => $validatedData['name'],
+            'name' => ucwords($validatedData['name']), //TODO: add passes validation
             'ability' => $validatedData['ability'],
             'goalkeeper' => $validatedData['goalkeeper'],
         ]);

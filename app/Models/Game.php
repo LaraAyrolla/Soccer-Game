@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
 
 class Game extends Model
@@ -40,5 +41,13 @@ class Game extends Model
     public function players(): HasManyThrough
     {
         return $this->hasManyThrough(Player::class, GamePlayer::class, 'game_id', 'id', 'id', 'player_id');
+    }
+    
+    /**
+     * Retrieve players available to be RSVP'd for the game
+     */
+    public function availablePlayers(): Collection
+    {
+        return Player::whereNotIn('id', $this->players->pluck('id'))->get();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreGameRequest;
 use App\Models\Game;
 use App\Models\Player;
 use Illuminate\Http\Request;
@@ -41,19 +42,28 @@ class GameController extends Controller
         );
     }
 
-    public function store(Request $request)
+    public function store(StoreGameRequest $request)
     {
-        $validatedData = $request->validate([
-            'label' => 'required|string|max:100',
-            'date' => 'required|date',
-        ]);
-
         Game::create([
-            'label' => ucfirst($validatedData['label']),
-            'date' => $validatedData['date'],
+            'label' => ucfirst($request->post('label')),
+            'date' => $request->post('date'),
         ]);
 
         return redirect('games')->with('success', 'Partida criada com sucesso.');
+    }
+
+    public function indexAvailablePlayers(string $gameId)
+    {
+        $game = Game::findOrFail($gameId);
+        $availablePlayers =  (new Game(['id' => $gameId]))->availablePlayers();
+
+        return view(
+            'player.index', 
+            [
+                'game' => $game,
+                'players' => $availablePlayers,
+            ]
+        );
     }
 
     /**

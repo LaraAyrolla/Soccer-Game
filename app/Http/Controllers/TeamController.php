@@ -5,118 +5,134 @@ namespace App\Http\Controllers;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Player;
-use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Collection;
 
 class TeamController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of teams according to the game.
      */
-    public function index()
+    public function indexByGame(string $gameId)
     {
-        //
+        $game = Game::findOrFail($gameId);
+
+        if (!GamePlayer::where('game_id', '=', $gameId)->exists()) {
+            return redirect('games')
+                ->withErrors([
+                    'Nenhum jogador confirmado para a partida!
+                    Por favor, confirme a presença de jogadores antes de gerar equipes.'
+                ])
+            ;
+        }
+
+        return view(
+            'team.index',
+            [
+                'teams' => GamePlayer::teamsByGameId($gameId),
+                'game' => $game,
+            ]
+        );
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created game_player with the game and the RSVP'd player.
      */
-    public function store(Request $request)
+    public function store(Request $request): Redirector|RedirectResponse
     {
         $validatedData = $request->validate([
             'game_id' => 'required|uuid|exists:games,id',
             'player_id' => 'required|uuid|exists:players,id',
         ]);
 
-        $gamePlayerExists = GamePlayer::where('game_id', $validatedData['game_id'])
-            ->where('player_id', $validatedData['player_id'])
+        $gameId = $validatedData['game_id'];
+        $playerId = $validatedData['player_id'];
+
+        $gamePlayerExists = GamePlayer::where('game_id', $gameId)
+            ->where('player_id', $playerId)
             ->exists()
         ;
 
         if ($gamePlayerExists) {
-            throw new Exception('This player is already confirmed for this game');
+            return back()->withErrors('This player is already confirmed for this game');
         }
 
-        $gamePlayer = new GamePlayer([
-            'game_id' => $validatedData['game_id'],
-            'player_id' => $validatedData['player_id'],
-        ]);
-        
-        $gamePlayer->save();
+        (new GamePlayer([
+            'game_id' => $gameId,
+            'player_id' => $playerId,
+        ]))->save();
 
-        return $gamePlayer;
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $gameId)
-    {
-        $game = Game::findOrFail($gameId);
-        $players = Player::all()->sortByDesc('ability');
-        $gamePlayers = (new Game(['id' => $gameId]))->players;
-
-        return view(
-            'game.players', 
-            [
-                'game' => $game,
-                'players' => $players,
-                'gamePlayers' => $gamePlayers,
-            ]
-        );
+        return redirect('available-players/'.$gameId)->with('success', 'Presença confirmada com sucesso.');
     }
 
     /**
      * Generate teams for a game according to the amount of players per team.
      */
-    public function update(Request $request)
+    public function update(Request $request): Redirector|RedirectResponse
     {
         $validatedData = $request->validate([
             'game_id' => 'required|uuid|exists:games,id',
-            'players' => 'required|integer|min:1'
+            // 'players' => 'required|integer|min:1'
         ]);
 
         $gameId = $validatedData['game_id'];
 
         $players = (new Game(['id' => $gameId]))->players->sortBy('ability');
 
-        $this->validatePlayersCount($players, $validatedData['players']);
+        $validationResult = $this->validatePlayersCount($players);
+
+        if ($validationResult !== null) {
+            return $validationResult;
+        }
 
         $teams = $this->generateTeams($players);
 
-        return $this->persistTeams($gameId, $teams);
+        $this->persistTeams($gameId, $teams);
+    
+        return back()->with('success', 'Equipes geradas com sucesso!');
+
     }
 
     /**
      * Generate teams by separating goalkeepers and balancing the players.
      */
-    private function validatePlayersCount(Collection &$players, int $teamCount): void
+    private function validatePlayersCount(Collection &$players): Redirector|RedirectResponse|null
     {
         $playersCount = $players->count();
-        $desiredPlayersCount = $teamCount;
 
         if ($playersCount <= 0) {
-            throw new Exception("The amount of players confirmed for the game must be greater than zero.");
+            return back()
+                ->withErrors([
+                    'A quantidade de jogadores confirmados para a partida deve ser maior que zero'
+                ])
+            ;
         }
 
         if ($playersCount%2 != 0) {
-            throw new Exception("The amount of players confirmed for the game must be even.");
+            return back()
+                ->withErrors([
+                    'A quantidade de jogadores confirmados para a partida deve ser um número par.'
+                ])
+            ;
         }
 
-        if ($playersCount/2 < $desiredPlayersCount) {
-            throw new Exception(
-                "The amount of players confirmed for the game cannot be less than "
-                . $desiredPlayersCount,
-            );
-        }
+        return null;
 
-        if ($playersCount/2 > $desiredPlayersCount) {
-            throw new Exception(
-                "The amount of players confirmed for the game cannot be more than "
-                . $desiredPlayersCount,
-            );
-        }
+        // if ($playersCount/2 < $desiredPlayersCount) {
+        //     throw new Exception(
+        //         "The amount of players confirmed for the game cannot be less than "
+        //         . $desiredPlayersCount,
+        //     );
+        // }
+
+        // if ($playersCount/2 > $desiredPlayersCount) {
+        //     throw new Exception(
+        //         "The amount of players confirmed for the game cannot be more than "
+        //         . $desiredPlayersCount,
+        //     );
+        // }
     }
 
     /**
@@ -168,12 +184,10 @@ class TeamController extends Controller
     /**
      * Persist teams in the database and returning game_players records.
      */
-    private function persistTeams(string $gameId, array $teams): GamePlayer|Collection
+    private function persistTeams(string $gameId, array $teams): void
     {
         $this->saveTeam($teams[1], 1, $gameId);
         $this->saveTeam($teams[2], 2, $gameId);
-
-        return GamePlayer::where('game_id', $gameId)->get();
     }
 
     /**

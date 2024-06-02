@@ -37,7 +37,7 @@ class GamePlayer extends Model
     /**
      * Get the game associated with game_player.
      */
-    public function getGame()
+    public function game()
     {
         return $this->hasOne(Game::class, 'id', 'game_id');
     }
@@ -45,8 +45,33 @@ class GamePlayer extends Model
     /**
      * Get the player associated with game_player.
      */
-    public function getPlayer()
+    public function player()
     {
         return $this->hasOne(Player::class, 'id', 'player_id');
+    }
+
+    public static function teamsByGameId(string $gameId): array
+    {
+        $playersByGame = GamePlayer::select()
+            ->join('players', 'players.id', '=', 'player_id')
+            ->where('game_id', $gameId)
+            ->orderByDesc('players.ability')
+            ->get()
+        ;
+
+        $teams = [];
+        $playersCount = $playersByGame->count();
+
+        for ($i=0; $i<$playersCount; $i++) {
+            $team = $playersByGame[$i]['team'];
+
+            if ($team === null) {
+                continue;
+            }
+
+            $teams[$playersByGame[$i]['team']][] = $playersByGame[$i];
+        }
+        
+        return $teams;
     }
 }

@@ -146,13 +146,6 @@ return [
     'ulid' => 'O campo :attribute deve ser um ULID válido.',
     'uuid' => 'O campo :attribute deve ser um UUID válido.',
 
-    //TODO: delete if not used
-    'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'mensagem-personalizada',
-        ],
-    ],
-
     'attributes' => [
         'ability' => 'habilidade',
         'date' => 'data',

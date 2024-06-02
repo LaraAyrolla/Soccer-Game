@@ -11,9 +11,5 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array<int, string>
      */
-    protected $except = [ //TODO: remove these exceptions
-        '/player',
-        '/game',
-        '/rsvp',
-    ];
+    protected $except = [];
 }

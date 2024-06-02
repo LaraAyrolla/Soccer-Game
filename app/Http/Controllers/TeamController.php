@@ -116,7 +116,7 @@ class TeamController extends Controller
     /**
      * Generate teams by separating goalkeepers and balancing the players abilities.
      */
-    private function generateTeams(Collection &$players): array
+    private function generateTeams(Collection $players): array
     {
         $teams = [];
 
@@ -125,19 +125,29 @@ class TeamController extends Controller
 
         if ($goalkeepers->count() >= 2) {
             $id = $this->extractGoalkeeper($goalkeepers, $players);
-            $teams[1][] = $id;
+            $teams[2][] = $id;
 
             $id = $this->extractGoalkeeper($goalkeepers, $players);
-            $teams[2][] = $id;
+            $teams[1][] = $id;
 
             $playersCount-=2;
         }
 
-        for ($i=0; $i<$playersCount; $i+=2) {
-            $id = $players->pop()->id;
-            $teams[1][] = $id;
-            $id = $players->pop()->id;
-            $teams[2][] = $id;
+        $players = $players->toArray();
+
+        if ($playersCount == 2) {
+            $teams[1][] = $players[0]['id'];
+            $teams[2][] = $players[1]['id'];
+
+            return $teams;
+        }
+
+        for ($i=0; $i<$playersCount/2; $i++) {
+            $teams[1][] = $players[$i]['id'];
+            $teams[1][] = $players[$playersCount-$i-1]['id'];
+
+            $teams[2][] = $players[$i]['id'];
+            $teams[1][] = $players[$playersCount-$i-2]['id'];
         }
 
         return $teams;

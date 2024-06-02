@@ -59,53 +59,30 @@
         </form>
 
         @if (count($teams) > 0)
-            <div style="display: flex ">
-                <div class="table-responsive col-md-6">
-                    <h5 style="margin: 30px 0;"><b>Time 1: </b></h5>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="col-3">Nome do Jogador</th>
-                                <th scope="col" class="col-3">Habilidade do Jogador</th>
-                                <th scope="col" class="col-3">Goleiro</th>
-                                <!-- <th scope="col" class="col-3">Time</th> -->
-                            </tr>
-                        </thead>
-                        @foreach ($teams[1] as $player)
+            <div style="display: flex">
+                @for ($i=1; $i<count($teams)+1; $i++)
+                    <div class="table-responsive col-md-6">
+                        <h5 style="margin: 30px 0;"><b>Time {{$i}}: </b></h5>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="col-3">Nome do Jogador</th>
+                                    <th scope="col" class="col-3">Habilidade do Jogador</th>
+                                    <th scope="col" class="col-3">Goleiro</th>
+                                </tr>
+                            </thead>
                             <tbody>
-                                <tr>
-                                    <td>{{ $player['name'] }}</td>
-                                    <td>{{ $player['ability'] }}</td>
-                                    <td>{{ $player['goalkeeper'] ? 'Sim' : 'Não' }}</td>
-                                    <!-- <td>{{ is_null($player['team']) ? '-' : $player['team'] }}</td> -->
-                                </tr>
+                                @foreach ($teams[$i] as $player)
+                                    <tr>
+                                        <td>{{ $player['name'] }}</td>
+                                        <td>{{ $player['ability'] }}</td>
+                                        <td>{{ $player['goalkeeper'] ? 'Sim' : 'Não' }}</td>
+                                    </tr>
+                                @endforeach
                             </tbody>
-                        @endforeach
-                    </table>
-                </div>
-                <div class="table-responsive col-md-6" style="float: left;">
-                    <h5 style="margin: 30px 0;"><b>Time 2: </b></h5>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="col-3">Nome do Jogador</th>
-                                <th scope="col" class="col-3">Habilidade do Jogador</th>
-                                <th scope="col" class="col-3">Goleiro</th>
-                                <!-- <th scope="col" class="col-3">Time</th> -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($teams[2] as $player)
-                                <tr>
-                                    <td>{{ $player['name'] }}</td>
-                                    <td>{{ $player['ability'] }}</td>
-                                    <td>{{ $player['goalkeeper'] ? 'Sim' : 'Não' }}</td>
-                                    <!-- <td>{{ is_null($player['team']) ? '-' : $player['team'] }}</td> -->
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        </table>
+                    </div>
+                @endfor
             </div>
         @else
             <p>Nenhuma equipe gerada para a partida! Clique no botão acima para gerar as equipes automaticamente.</p>

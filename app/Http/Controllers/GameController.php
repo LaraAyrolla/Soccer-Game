@@ -61,7 +61,10 @@ class GameController extends Controller
     public function indexAvailablePlayers(string $gameId)
     {
         $game = Game::findOrFail($gameId);
-        $availablePlayers =  (new Game(['id' => $gameId]))->availablePlayers();
+        $availablePlayers =  (new Game(['id' => $gameId]))
+            ->availablePlayers()
+            ->sortBy('name')
+        ;
 
         return view(
             'player.index', 

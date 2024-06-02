@@ -21,6 +21,9 @@ class GameController extends Controller
         return view('game.index', ['games' => $games]);
     }
 
+    /**
+     * Display view with a creating form for a new game.
+     */
     public function create(Request $request)
     {
         return view('game.register');
@@ -52,6 +55,9 @@ class GameController extends Controller
         return redirect('games')->with('success', 'Partida criada com sucesso.');
     }
 
+    /**
+     * Display a listing of players available to be RSVP'd for the game.
+     */
     public function indexAvailablePlayers(string $gameId)
     {
         $game = Game::findOrFail($gameId);
@@ -64,21 +70,5 @@ class GameController extends Controller
                 'players' => $availablePlayers,
             ]
         );
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Game $game)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Game $game)
-    {
-        //
     }
 }

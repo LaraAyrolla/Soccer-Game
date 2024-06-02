@@ -9,21 +9,13 @@ use Ramsey\Uuid\Uuid;
 class PlayerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display view with a creating form for a new player.
      */
-    public function index()
-    {
-        //
-    }
-
     public function create(Request $request)
     {
         return view('player.register');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -39,29 +31,5 @@ class PlayerController extends Controller
         ]);
 
         return $player;
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Player $player)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Player $player)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Player $player)
-    {
-        //
     }
 }

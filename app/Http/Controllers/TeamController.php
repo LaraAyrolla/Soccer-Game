@@ -68,13 +68,12 @@ class TeamController extends Controller
     }
 
     /**
-     * Generate teams for a game according to the amount of players per team.
+     * Generate teams for a game according to the amount of players RSVP'd.
      */
     public function update(Request $request): Redirector|RedirectResponse
     {
         $validatedData = $request->validate([
             'game_id' => 'required|uuid|exists:games,id',
-            // 'players' => 'required|integer|min:1'
         ]);
 
         $gameId = $validatedData['game_id'];
@@ -119,20 +118,6 @@ class TeamController extends Controller
         }
 
         return null;
-
-        // if ($playersCount/2 < $desiredPlayersCount) {
-        //     throw new Exception(
-        //         "The amount of players confirmed for the game cannot be less than "
-        //         . $desiredPlayersCount,
-        //     );
-        // }
-
-        // if ($playersCount/2 > $desiredPlayersCount) {
-        //     throw new Exception(
-        //         "The amount of players confirmed for the game cannot be more than "
-        //         . $desiredPlayersCount,
-        //     );
-        // }
     }
 
     /**
@@ -201,13 +186,5 @@ class TeamController extends Controller
                 'team' => $index
             ])
         ;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(GamePlayer $gamePlayer)
-    {
-        //
     }
 }

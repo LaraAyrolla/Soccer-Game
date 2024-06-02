@@ -132,14 +132,11 @@ class TeamController extends Controller
             $playersCount-=2;
         }
 
-        if ($playersCount == 2) {
-            $teams[1][] = $players->pop()->id;
-            $teams[2][] = $players[1]['id']->pop()->id;
-
-            return $teams;
-        }
-
         for ($i=0; $i<$playersCount/4; $i++) {
+            if ($this->twoPlayersLeft($players, $teams)) {
+                break;
+            };
+
             $teams[1][] = $players->pop()->id;
             $teams[1][] = $players->shift()->id;
 
@@ -148,6 +145,20 @@ class TeamController extends Controller
         }
 
         return $teams;
+    }
+
+    private function twoPlayersLeft(
+        Collection &$players,
+        array &$teams,
+    ): bool {
+        if ($players->count() == 2) {
+            $teams[1][] = $players->pop()->id;
+            $teams[2][] = $players->pop()->id;
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

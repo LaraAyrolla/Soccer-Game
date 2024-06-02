@@ -24,12 +24,12 @@ class PlayerController extends Controller
             'goalkeeper' => 'required|boolean',
         ]);
 
-        $player = Player::create([
+        Player::create([
             'name' => ucwords($validatedData['name']), //TODO: add passes validation
             'ability' => $validatedData['ability'],
             'goalkeeper' => $validatedData['goalkeeper'],
         ]);
 
-        return $player;
+        return back()->with('success', 'Jogador cadastrado com sucesso.');
     }
 }

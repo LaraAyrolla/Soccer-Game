@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
         Game::factory()->create(['label' => 'Jogo Legal']);
 
         $game = Game::factory()->create(['label' => 'Joguinho']);
-        $players = Player::factory(10)->create();
+        $players = Player::factory(25)->create();
 
-        for ($i=0; $i<10; $i++) {
+        for ($i=0; $i<16; $i++) {
             GamePlayer::factory()->create([
                     'team' => null,
                     'game_id' => $game->id,

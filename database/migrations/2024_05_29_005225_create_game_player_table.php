@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('game_player', function (Blueprint $table) {
+        Schema::create('game_players', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->tinyInteger('rsvp')->default(0);
             $table->smallInteger('team')->nullable();
-            $table->foreignUuid('game_id')->references('id')->on('game');
-            $table->foreignUuid('player_id')->references('id')->on('player');
+            $table->foreignUuid('game_id')->references('id')->on('games');
+            $table->foreignUuid('player_id')->references('id')->on('players');
+            $table->unique(['game_id', 'player_id']);
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('game_player');
+        Schema::dropIfExists('game_players');
     }
 };

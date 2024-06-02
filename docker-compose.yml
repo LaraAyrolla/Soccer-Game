@@ -1,3 +1,5 @@
+version: '3.7'
+
 volumes:
   dbdata:
     driver: local
@@ -15,8 +17,6 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
-    # networks:
-    #   - laravel
     depends_on:
       - db
       - webserver
@@ -29,8 +29,6 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
-    # networks:
-    #   - laravel
 
   db:
     image: mysql:5.7
@@ -45,9 +43,3 @@ services:
       - "3306:3306"
     volumes:
       - dbdata:/var/lib/mysql
-    # networks:
-    #   - laravel
-
-# networks:
-#   laravel:
-#     driver: bridge

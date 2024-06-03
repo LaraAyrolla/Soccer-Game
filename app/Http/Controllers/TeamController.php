@@ -18,15 +18,15 @@ class TeamController extends Controller
     /**
      * Display a listing of teams according to the game.
      */
-    public function indexByGame(string $gameId): Factory|View
+    public function indexByGame(string $gameId): Redirector|RedirectResponse|Factory|View
     {
         $game = Game::findOrFail($gameId);
 
-        if (!GamePlayer::where('game_id', '=', $gameId)->exists()) {
+        if (GamePlayer::where('game_id', '=', $gameId)->count() <= 1) {
             return redirect('games')
                 ->withErrors([
-                    'Nenhum jogador confirmado para a partida!
-                    Por favor, confirme a presença de jogadores antes de gerar equipes.'
+                    'São necessários dois os mais jogadores confirmados para gerar as equipes!
+                    Por favor, confirme a presença de mais jogadores antes de prosseguir.'
                 ])
             ;
         }

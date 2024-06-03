@@ -108,7 +108,7 @@ class TeamController extends Controller
         if ($playersCount/2 < $desiredPlayersCount) {
             return back()
                 ->withErrors([
-                    'A quantidade de jogadores por equipe não pode ser maior que '.($playersCount/2).'.'
+                    'A quantidade de jogadores por equipe não pode ser maior que '.floor($playersCount/2).'.'
                 ])
             ;
         }
@@ -137,10 +137,17 @@ class TeamController extends Controller
             $desiredPlayersCount-=2;
         }
 
-        if ($playersCount != $desiredPlayersCount) {
-            $teams[3] = $players->shift($playersCount-$desiredPlayersCount)->pluck('id')->toArray();
-            $playersCount = $desiredPlayersCount;
+        switch ($playersCount) {
+            case $desiredPlayersCount:
+                break;
+            case $desiredPlayersCount+1:
+                $teams[3][] = $players->shift()->id;
+                break;
+            default:
+                $teams[3] = $players->shift($playersCount-$desiredPlayersCount)->pluck('id')->toArray();
         }
+
+        $playersCount = $desiredPlayersCount;
 
         for ($i=0; $i<$playersCount/4; $i++) {
             if ($this->twoPlayersLeft($players, $teams)) {

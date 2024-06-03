@@ -71,16 +71,17 @@ class TeamController extends Controller
     public function update(UpdateTeamsRequest $request): Redirector|RedirectResponse
     {
         $gameId = $request->post('game_id');
+        $desiredPlayersCount = $request->post('players');
 
         $players = (new Game(['id' => $gameId]))->players->sortBy('ability');
 
-        $validationResult = $this->validatePlayersCount($players);
+        $validationResult = $this->validatePlayersCount($players, $desiredPlayersCount);
 
         if ($validationResult !== null) {
             return $validationResult;
         }
 
-        $teams = $this->generateTeams($players);
+        $teams = $this->generateTeams($players, $desiredPlayersCount*2);
 
         $this->persistTeams($gameId, $teams);
     
@@ -90,8 +91,10 @@ class TeamController extends Controller
     /**
      * Generate teams by separating goalkeepers and balancing the players.
      */
-    private function validatePlayersCount(Collection &$players): Redirector|RedirectResponse|null
-    {
+    private function validatePlayersCount(
+        Collection &$players,
+        int $desiredPlayersCount
+    ): Redirector|RedirectResponse|null {
         $playersCount = $players->count();
 
         if ($playersCount <= 0) {
@@ -102,10 +105,10 @@ class TeamController extends Controller
             ;
         }
 
-        if ($playersCount%2 != 0) {
+        if ($playersCount/2 < $desiredPlayersCount) {
             return back()
                 ->withErrors([
-                    'A quantidade de jogadores confirmados para a partida deve ser um número par.'
+                    'A quantidade de jogadores por equipe deve ser no máximo '.($playersCount/2).'.'
                 ])
             ;
         }
@@ -116,7 +119,7 @@ class TeamController extends Controller
     /**
      * Generate teams by separating goalkeepers and balancing the players abilities.
      */
-    private function generateTeams(Collection $players): array
+    private function generateTeams(Collection $players, int $desiredPlayersCount): array
     {
         $teams = [];
 
@@ -131,6 +134,12 @@ class TeamController extends Controller
             $teams[1][] = $id;
 
             $playersCount-=2;
+            $desiredPlayersCount-=2;
+        }
+
+        if ($playersCount != $desiredPlayersCount) {
+            $teams[3] = $players->shift($playersCount-$desiredPlayersCount)->pluck('id')->toArray();
+            $playersCount = $desiredPlayersCount;
         }
 
         for ($i=0; $i<$playersCount/4; $i++) {
@@ -138,11 +147,11 @@ class TeamController extends Controller
                 break;
             };
 
-            $teams[1][] = $players->pop()->id;
             $teams[1][] = $players->shift()->id;
+            $teams[1][] = $players->pop()->id;
 
-            $teams[2][] = $players->pop()->id;
             $teams[2][] = $players->shift()->id;
+            $teams[2][] = $players->pop()->id;
         }
 
         return $teams;
@@ -183,8 +192,10 @@ class TeamController extends Controller
      */
     private function persistTeams(string $gameId, array $teams): void
     {
-        $this->saveTeam($teams[1], 1, $gameId);
-        $this->saveTeam($teams[2], 2, $gameId);
+        GamePlayer::where('game_id', $gameId)->update(['team' => null]);
+        foreach ($teams as $index=>$team) {
+            $this->saveTeam($team, $index, $gameId);
+        }
     }
 
     /**

@@ -35,7 +35,7 @@ class GameController extends Controller
     /**
      * Display view with all of the players RSVP'd for the game.
      */
-    public function showPlayers(string $gameId): Factory|View
+    public function indexConfirmedPlayers(string $gameId): Factory|View
     {
         $game = Game::findOrFail($gameId);
         $gamePlayers = $game->players->sortBy('name');

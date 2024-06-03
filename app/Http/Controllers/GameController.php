@@ -51,9 +51,21 @@ class GameController extends Controller
 
     public function store(StoreGameRequest $request): Redirector|RedirectResponse
     {
+        $label = $request->post('label');
+        $date = $request->post('date');
+
+        $gameExists = Game::where('label', $label)
+            ->where('date', $date)
+            ->exists()
+        ;
+
+        if ($gameExists) {
+            return back()->withErrors('Uma partida com o mesmo rótulo e a mesma data já existe.');
+        }
+
         Game::create([
-            'label' => ucfirst($request->post('label')),
-            'date' => $request->post('date'),
+            'label' => $label,
+            'date' => $date,
         ]);
 
         return redirect('games')->with('success', 'Partida criada com sucesso.');

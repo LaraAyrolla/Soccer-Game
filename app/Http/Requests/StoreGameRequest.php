@@ -11,6 +11,13 @@ class StoreGameRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation()
+    {
+        $this->merge([
+            'label' => ucfirst($this->label),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

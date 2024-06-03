@@ -30,6 +30,5 @@ Utilização de Laravel na arquitetura MVC com blades.
 
 ![image](https://github.com/LaraAyrolla/Soccer-Games/assets/72223107/261396f9-68c0-45e0-ab48-55fe5d96b713)
 ![image](https://github.com/LaraAyrolla/Soccer-Games/assets/72223107/009791db-c001-420e-b877-230b95a258e8)
-![image](https://github.com/LaraAyrolla/Soccer-Games/assets/72223107/e8256a4a-0a24-4a2a-9124-41c9cedcbcd2)
 ![image](https://github.com/LaraAyrolla/Soccer-Games/assets/72223107/19fface4-8995-46ba-81e8-4677cc5c5db4)
 ![image](https://github.com/LaraAyrolla/Soccer-Games/assets/72223107/56bf2994-94a5-4928-9e11-bbd977b5d8c0)

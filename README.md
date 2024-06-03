@@ -4,6 +4,41 @@ Aplicação web para cadastro e gerenciamento de partidas de futebol.
 ## Tecnologias
 Utilização de Laravel na arquitetura MVC com blades.
 
+## Acesso pelo servidor
+* A aplicação foi hospedada em uma máquina virtual e pode ser acessada pelo link: <a href="http://168.138.152.94:8000/">http://168.138.152.94:8000</a>
+* Já está propriamente configurada para o funcionamento, com a base de dados já populada.
+* Basta acessar e utilizar.
+
+
+## Instalação e uso na máquina local
+* Instalar o docker e o docker-compose, caso já não estejam instalados.
+
+* Clonar este repositório.
+
+* Dentro da pasta do projeto, executar o comando:
+  <br/> ```docker compose up```
+  <br/>    ou
+  <br/> ```docker compose up --build```
+
+* Executar os comandos para configurar permissões de acesso nas pastas:
+  <br/> ```./access-permissions.sh```
+  <br/> ```chmod +x ./access-permissions.sh```
+
+* Acessar o container da aplicação pelo terminal:
+  <br/> ```docker exec -it soccer_team bash```
+  
+* Criar o arquivo .env:
+  <br/> ```cp env.example .env```
+
+* Instalar o composer:
+  <br/> ```composer install```
+
+* Executar as migrations com seeder para criar uma base de dados populada:
+  <br/> ```php artisan migrate --seed```
+
+* Por fim, acessar a aplicação utilizando um brower, pelo link:
+  <br/> ```http://localhost:8000/```
+
 ## Funcionalidades
 * <b> Visualizar partidas: </b> Listagem das partidas disponíveis na base de dados, ordenadas da data de patida mais atual para a mais antiga, com botões de ação.
   * O botão azul redireciona para a tela de jogadores confirmados e pode ser clicado a qualquer momento para visualizar os jogadores da partida ou adicionar/confirmar outros jogadores.

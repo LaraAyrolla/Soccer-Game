@@ -108,7 +108,7 @@ class TeamController extends Controller
         if ($playersCount/2 < $desiredPlayersCount) {
             return back()
                 ->withErrors([
-                    'A quantidade de jogadores por equipe deve ser no máximo '.($playersCount/2).'.'
+                    'A quantidade de jogadores por equipe não pode ser maior que '.($playersCount/2).'.'
                 ])
             ;
         }

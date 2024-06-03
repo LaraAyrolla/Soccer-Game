@@ -5,7 +5,7 @@ Aplicação web para cadastro e gerenciamento de partidas de futebol.
 Utilização de Laravel na arquitetura MVC com blades.
 
 ## Funcionalidades
-* <b> Visualizar partidas: </b> Listagem das partidas disponíveis na base de dados, com botões de ação.
+* <b> Visualizar partidas: </b> Listagem das partidas disponíveis na base de dados, ordenadas da data de patida mais atual para a mais antiga, com botões de ação.
   * O botão azul redireciona para a tela de jogadores confirmados e pode ser clicado a qualquer momento para visualizar os jogadores da partida ou adicionar/confirmar outros jogadores.
   * O botão verde redireciona para a tela de geração de equipes e somente pode ser clicado quando houver 2 ou mais jogadores confirmados para a partida.
   

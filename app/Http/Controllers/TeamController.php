@@ -128,10 +128,10 @@ class TeamController extends Controller
 
         if ($goalkeepers->count() >= 2) {
             $id = $this->extractGoalkeeper($goalkeepers, $players);
-            $teams[2][] = $id;
+            $teams[1][] = $id;
 
             $id = $this->extractGoalkeeper($goalkeepers, $players);
-            $teams[1][] = $id;
+            $teams[2][] = $id;
 
             $playersCount-=2;
             $desiredPlayersCount-=2;
@@ -169,8 +169,8 @@ class TeamController extends Controller
         array &$teams,
     ): bool {
         if ($players->count() == 2) {
-            $teams[1][] = $players->pop()->id;
             $teams[2][] = $players->pop()->id;
+            $teams[1][] = $players->pop()->id;
 
             return true;
         }

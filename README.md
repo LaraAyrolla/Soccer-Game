@@ -2,7 +2,7 @@
 Aplicação web para cadastro e gerenciamento de partidas de futebol.
 
 ## Tecnologias
-Utilização de Laravel na arquitetura MVC com blades.
+Utilização de Laravel na arquitetura MVC com blade.
 
 ## Acesso pelo servidor
 * A aplicação foi hospedada em uma máquina virtual e pode ser acessada pelo link: <a href="http://168.138.152.94:8000/">http://168.138.152.94:8000</a>
@@ -91,3 +91,9 @@ Utilização de Laravel na arquitetura MVC com blades.
 ![image](https://github.com/LaraAyrolla/Soccer-Games/assets/72223107/802ebab6-9a17-4207-aef7-3a3d563a4b23)
 ![image](https://github.com/LaraAyrolla/Soccer-Games/assets/72223107/be7c46d9-f680-467d-84e8-26f4165791b7)
 
+## Testes automatizados
+* Foram feitos testes de feature para todas as rotas GET, que retornam views.
+* Para executar os testes, basta acessar o container pelo comando ```docker exec -it soccer_team bash``` e utilizar o comando:
+```php artisan test```
+
+![image](https://github.com/LaraAyrolla/Soccer-Games/assets/72223107/8f205d83-c3ff-42c5-8bec-190b871ea85c)

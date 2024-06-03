@@ -8,7 +8,6 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Player;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Collection;
 

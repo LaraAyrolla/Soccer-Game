@@ -7,6 +7,8 @@ use App\Http\Requests\UpdateTeamsRequest;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Player;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Collection;
@@ -16,7 +18,7 @@ class TeamController extends Controller
     /**
      * Display a listing of teams according to the game.
      */
-    public function indexByGame(string $gameId)
+    public function indexByGame(string $gameId): Factory|View
     {
         $game = Game::findOrFail($gameId);
 

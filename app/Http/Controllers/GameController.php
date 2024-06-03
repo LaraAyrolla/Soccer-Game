@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreGameRequest;
 use App\Models\Game;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 
 class GameController extends Controller
 {
-    public function index()
+    public function index(): Factory|View
     {
         $games = Game::all()->sortByDesc('date');
 
@@ -23,12 +27,15 @@ class GameController extends Controller
     /**
      * Display view with a creating form for a new game.
      */
-    public function create(Request $request)
+    public function create(Request $request): Factory|View
     {
         return view('game.register');
     }
 
-    public function show(string $gameId)
+    /**
+     * Display view with all of the players RSVP'd for the game.
+     */
+    public function showPlayers(string $gameId): Factory|View
     {
         $game = Game::findOrFail($gameId);
         $gamePlayers = $game->players->sortBy('name');
@@ -42,7 +49,7 @@ class GameController extends Controller
         );
     }
 
-    public function store(StoreGameRequest $request)
+    public function store(StoreGameRequest $request): Redirector|RedirectResponse
     {
         Game::create([
             'label' => ucfirst($request->post('label')),
@@ -55,7 +62,7 @@ class GameController extends Controller
     /**
      * Display a listing of players available to be RSVP'd for the game.
      */
-    public function indexAvailablePlayers(string $gameId)
+    public function indexAvailablePlayers(string $gameId): Factory|View
     {
         $game = Game::findOrFail($gameId);
         $availablePlayers =  $game->availablePlayers();

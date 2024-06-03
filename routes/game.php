@@ -9,7 +9,7 @@ Route::get('/games', [GameController::class, 'index']);
 
 Route::get('/game/create', [GameController::class, 'create']);
 
-Route::get('/game/{gameId}', [GameController::class, 'show']);
+Route::get('/game/{gameId}', [GameController::class, 'showPlayers']);
 
 Route::get('/available-players/{gameId}', [GameController::class, 'indexAvailablePlayers']);
 

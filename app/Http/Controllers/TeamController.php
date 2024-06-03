@@ -97,7 +97,7 @@ class TeamController extends Controller
     ): Redirector|RedirectResponse|null {
         $playersCount = $players->count();
 
-        if ($$desiredPlayersCount <= 0) {
+        if ($desiredPlayersCount <= 0) {
             return back()
                 ->withErrors([
                     'A quantidade de jogadores por equipe deve ser maior que zero'

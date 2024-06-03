@@ -23,6 +23,7 @@ class UpdateTeamsRequest extends FormRequest
     {
         return [
             'game_id' => 'required|uuid|exists:games,id',
+            'players' => 'required|int',
         ];
     }
 }

@@ -20,6 +20,7 @@ class PlayerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('player.index');
+
         $response->assertSee('Os jogadores abaixo estão disponíveis para a confirmação de presença na partida <b>'.$game->label.'</b>. Novos jogadores podem ser cadastrados.', false);
         $response->assertSee('Nenhum jogador disponível para confirmação! Clique no botão acima para adicionar jogadores.');
     }
@@ -45,7 +46,9 @@ class PlayerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('player.index');
+
         $response->assertSee('Os jogadores abaixo estão disponíveis para a confirmação de presença na partida <b>'.$game->label.'</b>. Novos jogadores podem ser cadastrados.', false);
+
         $response->assertViewHas('players', function ($viewPlayers) use ($remainingPlayersCount) {
             return $viewPlayers->count() === $remainingPlayersCount;
         });
@@ -69,7 +72,9 @@ class PlayerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('player.index');
+
         $response->assertSee('Nenhum jogador disponível para confirmação! Clique no botão acima para adicionar jogadores.');
+
         $response->assertViewHas('players', function ($viewPlayers) {
             return $viewPlayers->count() === 0;
         });
@@ -81,6 +86,7 @@ class PlayerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('player.register');
+
         $response->assertSee('Cadastre um novo jogador. Ele ficará disponível para diferentes partidas de futebol.');
     }
 }

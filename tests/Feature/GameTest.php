@@ -18,6 +18,7 @@ class GameTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('game.index');
+
         $response->assertSee('Crie novas partidas. Jogadores podem ser cadastrados durante a confirmação de presença.');
         $response->assertSee('Nenhuma partida cadastrada! Clique no botão acima para adicionar partidas.');
     }
@@ -30,6 +31,7 @@ class GameTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('game.index');
+
         $response->assertSee('Crie novas partidas. Jogadores podem ser cadastrados durante a confirmação de presença.');
 
         $response->assertViewHas('games', function ($viewUsers) use ($games) {
@@ -45,6 +47,7 @@ class GameTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('game.players');
+
         $response->assertSee('Gerenciando a partida: <b>'.$game->label.'</b>', false);
         $response->assertSee('Nenhum jogador confirmado para a partida! Clique no botão acima para adicionar jogadores.');
     }
@@ -67,7 +70,9 @@ class GameTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('game.players');
+
         $response->assertSee('Gerenciando a partida: <b>'.$game->label.'</b>', false);
+
         $response->assertViewHas('gamePlayers', function ($viewGamePlayers) use ($playersCount) {
             return $viewGamePlayers->count() === $playersCount;
         });
@@ -79,6 +84,7 @@ class GameTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('game.register');
+
         $response->assertSee('Crie uma nova partida de futebol.');
     }
 }

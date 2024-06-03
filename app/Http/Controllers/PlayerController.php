@@ -2,66 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePlayerRequest;
 use App\Models\Player;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Ramsey\Uuid\Uuid;
 
 class PlayerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display view with a creating form for a new player.
      */
-    public function index()
-    {
-        //
-    }
-
-    public function create(Request $request)
+    public function create(Request $request): Factory|View
     {
         return view('player.register');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StorePlayerRequest $request): RedirectResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:100|unique:players',
-            'ability' => 'required|integer|min:1|max:5',
-            'goalkeeper' => 'required|boolean',
+        Player::create([
+            'name' => $request->post('name'),
+            'ability' => $request->post('ability'),
+            'goalkeeper' => $request->post('goalkeeper'),
         ]);
 
-        $player = Player::create([
-            'name' => ucwords($validatedData['name']), //TODO: add passes validation
-            'ability' => $validatedData['ability'],
-            'goalkeeper' => $validatedData['goalkeeper'],
-        ]);
-
-        return $player;
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Player $player)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Player $player)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Player $player)
-    {
-        //
+        return back()->with('success', 'Jogador cadastrado com sucesso.');
     }
 }

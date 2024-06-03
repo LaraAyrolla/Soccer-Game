@@ -4,18 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreGameRequest extends FormRequest
+class UpdateTeamsRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
         return true;
-    }
-
-    public function prepareForValidation()
-    {
-        $this->merge([
-            'label' => ucfirst($this->label),
-        ]);
     }
 
     /**
@@ -26,8 +22,7 @@ class StoreGameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'label' => 'required|string|max:100',
-            'date' => 'required|date',
+            'game_id' => 'required|uuid|exists:games,id',
         ];
     }
 }

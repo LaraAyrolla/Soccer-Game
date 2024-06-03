@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Ramsey\Uuid\Uuid;
 
 class GamePlayer extends Model
@@ -23,7 +24,7 @@ class GamePlayer extends Model
     /**
      * Autogenerate UUID for the primary key if it's not set
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -37,7 +38,7 @@ class GamePlayer extends Model
     /**
      * Get the game associated with game_player.
      */
-    public function game()
+    public function game(): HasOne
     {
         return $this->hasOne(Game::class, 'id', 'game_id');
     }
@@ -45,7 +46,7 @@ class GamePlayer extends Model
     /**
      * Get the player associated with game_player.
      */
-    public function player()
+    public function player(): HasOne
     {
         return $this->hasOne(Player::class, 'id', 'player_id');
     }

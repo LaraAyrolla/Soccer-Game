@@ -146,12 +146,12 @@ return [
     'ulid' => 'O campo :attribute deve ser um ULID válido.',
     'uuid' => 'O campo :attribute deve ser um UUID válido.',
 
-    'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'mensagem-personalizada',
-        ],
+    'attributes' => [
+        'ability' => 'habilidade',
+        'date' => 'data',
+        'goalkeeper' => 'goleiro',
+        'label' => 'rótulo',
+        'name' => 'nome',
     ],
-
-    'attributes' => [],
 
 ];

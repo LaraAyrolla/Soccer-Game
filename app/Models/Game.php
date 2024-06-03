@@ -48,6 +48,6 @@ class Game extends Model
      */
     public function availablePlayers(): Collection
     {
-        return Player::whereNotIn('id', $this->players->pluck('id'))->get();
+        return Player::whereNotIn('id', $this->players->pluck('id'))->get()->sortBy('name');
     }
 }

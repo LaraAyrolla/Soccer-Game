@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use GuzzleHttp\Psr7\Query;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Ramsey\Uuid\Uuid;
 
 class Player extends Model
@@ -24,7 +24,7 @@ class Player extends Model
     /**
      * Autogenerate UUID for the primary key if it's not set
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -33,5 +33,13 @@ class Player extends Model
                 $player->id = Uuid::uuid4()->toString();
             }
         });
+    }
+
+    /**
+     * Get the game_player to which the player belongs.
+     */
+    public function gamePlayer(): BelongsTo
+    {
+        return $this->belongsTo(GamePlayer::class, 'player_id', 'id');
     }
 }

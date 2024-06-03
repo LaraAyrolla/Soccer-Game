@@ -61,7 +61,6 @@
                         <th scope="col" class="col-3">Nome</th>
                         <th scope="col" class="col-3">Habilidade</th>
                         <th scope="col" class="col-3">Goleiro</th>
-                        <th scope="col" class="col-3">Time</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,7 +69,6 @@
                             <td>{{ $player['name'] }}</td>
                             <td>{{ $player['ability'] }}</td>
                             <td>{{ $player['goalkeeper'] ? 'Sim' : 'Não' }}</td>
-                            <td>{{ is_null($player['team']) ? '-' : $player['team'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>

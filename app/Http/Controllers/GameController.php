@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreGameRequest;
 use App\Models\Game;
-use App\Models\Player;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 
 class GameController extends Controller
 {
-    public function index()
+    public function index(): Factory|View
     {
         $games = Game::all()->sortByDesc('date');
 
@@ -21,41 +24,60 @@ class GameController extends Controller
         return view('game.index', ['games' => $games]);
     }
 
-    public function create(Request $request)
+    /**
+     * Display view with a creating form for a new game.
+     */
+    public function create(Request $request): Factory|View
     {
         return view('game.register');
     }
 
-    public function show(string $gameId)
+    /**
+     * Display view with all of the players RSVP'd for the game.
+     */
+    public function indexConfirmedPlayers(string $gameId): Factory|View
     {
         $game = Game::findOrFail($gameId);
-        $players = Player::all()->sortByDesc('ability');
-        $gamePlayers = (new Game(['id' => $gameId]))->players;
+        $gamePlayers = $game->players->sortBy('name');
 
         return view(
             'game.players', 
             [
                 'game' => $game,
-                'players' => $players,
                 'gamePlayers' => $gamePlayers,
             ]
         );
     }
 
-    public function store(StoreGameRequest $request)
+    public function store(StoreGameRequest $request): Redirector|RedirectResponse
     {
+        $label = $request->post('label');
+        $date = $request->post('date');
+
+        $gameExists = Game::where('label', $label)
+            ->where('date', $date)
+            ->exists()
+        ;
+
+        if ($gameExists) {
+            return back()->withErrors('Uma partida com o mesmo rótulo e a mesma data já existe.');
+        }
+
         Game::create([
-            'label' => ucfirst($request->post('label')),
-            'date' => $request->post('date'),
+            'label' => $label,
+            'date' => $date,
         ]);
 
         return redirect('games')->with('success', 'Partida criada com sucesso.');
     }
 
-    public function indexAvailablePlayers(string $gameId)
+    /**
+     * Display a listing of players available to be RSVP'd for the game.
+     */
+    public function indexAvailablePlayers(string $gameId): Factory|View
     {
         $game = Game::findOrFail($gameId);
-        $availablePlayers =  (new Game(['id' => $gameId]))->availablePlayers();
+        $availablePlayers =  $game->availablePlayers();
 
         return view(
             'player.index', 
@@ -64,21 +86,5 @@ class GameController extends Controller
                 'players' => $availablePlayers,
             ]
         );
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Game $game)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Game $game)
-    {
-        //
     }
 }

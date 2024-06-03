@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreGamePlayerRequest;
+use App\Http\Requests\UpdateTeamsRequest;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Player;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Collection;
 
@@ -15,7 +18,7 @@ class TeamController extends Controller
     /**
      * Display a listing of teams according to the game.
      */
-    public function indexByGame(string $gameId)
+    public function indexByGame(string $gameId): Factory|View
     {
         $game = Game::findOrFail($gameId);
 
@@ -40,15 +43,10 @@ class TeamController extends Controller
     /**
      * Store a newly created game_player with the game and the RSVP'd player.
      */
-    public function store(Request $request): Redirector|RedirectResponse
+    public function store(StoreGamePlayerRequest $request): Redirector|RedirectResponse
     {
-        $validatedData = $request->validate([
-            'game_id' => 'required|uuid|exists:games,id',
-            'player_id' => 'required|uuid|exists:players,id',
-        ]);
-
-        $gameId = $validatedData['game_id'];
-        $playerId = $validatedData['player_id'];
+        $gameId = $request->post('game_id');
+        $playerId = $request->post('player_id');
 
         $gamePlayerExists = GamePlayer::where('game_id', $gameId)
             ->where('player_id', $playerId)
@@ -56,7 +54,7 @@ class TeamController extends Controller
         ;
 
         if ($gamePlayerExists) {
-            return back()->withErrors('This player is already confirmed for this game');
+            return back()->withErrors('Esse jogador já confirmou presença para essa partida.');
         }
 
         (new GamePlayer([
@@ -68,16 +66,11 @@ class TeamController extends Controller
     }
 
     /**
-     * Generate teams for a game according to the amount of players per team.
+     * Generate teams for a game according to the amount of players RSVP'd.
      */
-    public function update(Request $request): Redirector|RedirectResponse
+    public function update(UpdateTeamsRequest $request): Redirector|RedirectResponse
     {
-        $validatedData = $request->validate([
-            'game_id' => 'required|uuid|exists:games,id',
-            // 'players' => 'required|integer|min:1'
-        ]);
-
-        $gameId = $validatedData['game_id'];
+        $gameId = $request->post('game_id');
 
         $players = (new Game(['id' => $gameId]))->players->sortBy('ability');
 
@@ -92,7 +85,6 @@ class TeamController extends Controller
         $this->persistTeams($gameId, $teams);
     
         return back()->with('success', 'Equipes geradas com sucesso!');
-
     }
 
     /**
@@ -119,26 +111,12 @@ class TeamController extends Controller
         }
 
         return null;
-
-        // if ($playersCount/2 < $desiredPlayersCount) {
-        //     throw new Exception(
-        //         "The amount of players confirmed for the game cannot be less than "
-        //         . $desiredPlayersCount,
-        //     );
-        // }
-
-        // if ($playersCount/2 > $desiredPlayersCount) {
-        //     throw new Exception(
-        //         "The amount of players confirmed for the game cannot be more than "
-        //         . $desiredPlayersCount,
-        //     );
-        // }
     }
 
     /**
      * Generate teams by separating goalkeepers and balancing the players abilities.
      */
-    private function generateTeams(Collection &$players): array
+    private function generateTeams(Collection $players): array
     {
         $teams = [];
 
@@ -147,22 +125,41 @@ class TeamController extends Controller
 
         if ($goalkeepers->count() >= 2) {
             $id = $this->extractGoalkeeper($goalkeepers, $players);
-            $teams[1][] = $id;
+            $teams[2][] = $id;
 
             $id = $this->extractGoalkeeper($goalkeepers, $players);
-            $teams[2][] = $id;
+            $teams[1][] = $id;
 
             $playersCount-=2;
         }
 
-        for ($i=0; $i<$playersCount; $i+=2) {
-            $id = $players->pop()->id;
-            $teams[1][] = $id;
-            $id = $players->pop()->id;
-            $teams[2][] = $id;
+        for ($i=0; $i<$playersCount/4; $i++) {
+            if ($this->twoPlayersLeft($players, $teams)) {
+                break;
+            };
+
+            $teams[1][] = $players->pop()->id;
+            $teams[1][] = $players->shift()->id;
+
+            $teams[2][] = $players->pop()->id;
+            $teams[2][] = $players->shift()->id;
         }
 
         return $teams;
+    }
+
+    private function twoPlayersLeft(
+        Collection &$players,
+        array &$teams,
+    ): bool {
+        if ($players->count() == 2) {
+            $teams[1][] = $players->pop()->id;
+            $teams[2][] = $players->pop()->id;
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -201,13 +198,5 @@ class TeamController extends Controller
                 'team' => $index
             ])
         ;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(GamePlayer $gamePlayer)
-    {
-        //
     }
 }
